@@ -1,0 +1,6 @@
+client - ash avenue comics
+industry - comic books
+
+2/14/2022	project created
+		initial ideas: new comic text automation, customer profitability models
+
