@@ -19,12 +19,13 @@ new_comic_scraper <- function(publisher = c(NA_character_), content_type = c('Co
   library(data.table)
   library(lubridate)
   library(dplyr)
+  library(tidyr)
   
   new_comics <- data.table()
   
   
   ##### 2. DC Comics #####
-  if(publisher == 'DC'){
+  if('DC' %in% publisher | (length(publisher) == 1 & is.na(publisher))){
     ##### 2a. Pull the Titles #####
     # link for dc new comics #
     dc_link <- 'https://www.dccomics.com/comics?all=1#browse'
@@ -33,15 +34,26 @@ new_comic_scraper <- function(publisher = c(NA_character_), content_type = c('Co
     dc_html <- read_html(dc_link)
     
     # extract the new comics from css node #
-    comic_title <- dc_html %>% html_nodes('.slick--optionset--comics-and-graphic-novels a') %>% html_text()
+    comic_title <- as.data.table(dc_html %>% html_nodes('.slick--optionset--comics-and-graphic-novels a') 
+                                 %>% html_text())
+    setnames(comic_title, 'V1', 'comic_titles')
     
     # transform into data table and remove blanks #
-    dc_comics <- as.data.table(comic_title)
-    dc_comics <- dc_comics[comic_title != '',]
+    comic_title <- comic_title[comic_titles != '',]
     
     
     ##### 2b. Pull Each Title's Specific Info #####
+    comic_type <-  as.data.table(dc_html %>% html_nodes('.content-type') %>% html_text())
+    setnames(comic_type, 'V1', 'comic_types')
+    dc_comics <- cbind(comic_title, comic_type)
     
+    dc_comics <- dc_comics[comic_types %in% content_type,]
+    
+    dc_comics <- separate(dc_comics, comic_titles, into = c('comic_titles', 'comic_issues'), sep = "#",
+                                                            remove = F)
+    
+    dc_comics[, `:=` (comic_titles = tolower(comic_titles),
+                      comic_issues = as.numeric(comic_issues))]
     
   }
   
