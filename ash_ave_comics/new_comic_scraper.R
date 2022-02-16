@@ -100,18 +100,19 @@ new_comic_scraper <- function(publisher = c(NA_character_), content_type = c('Co
   
   
   ##### 3. Marvel Comics #####
-  if(publisher == 'Marvel'){
+  if(publisher == 'Marvel' | is.na(publisher)){
     
   }
   
   
   ##### 4. Image Comics #####
-  if(publisher == 'Image'){
+  if(publisher == 'Image' | is.na(publisher)){
     
   }
   
   
   ##### 5. Clean Data and Output #####
-
+  new_comics[, comic_title := str_trim(comic_title)]
+  new_comics
   
 }
