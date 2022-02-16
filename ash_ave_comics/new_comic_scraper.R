@@ -13,13 +13,17 @@ new_comic_scraper <- function(publisher = c(NA_character_), content_type = c('Co
   # publisher is a vector string to determine who we are scraping from; dc, marvel etc #
   # content type is a vector or strings such as comic books, graphic novels etc #'
   
-  ##### 1. Import Libraries #####
+  ##### 1. Import Libraries and Initialize Output #####
   library(tidyverse)
   library(rvest)
   library(data.table)
   library(lubridate)
   library(dplyr)
   library(tidyr)
+  
+  new_comics <- data.table(comic_title = character(),
+                           comic_issue = numeric(),
+                           comic_price = numeric())
   
   
   ##### 2. DC Comics #####
@@ -88,6 +92,10 @@ new_comic_scraper <- function(publisher = c(NA_character_), content_type = c('Co
     
     # reorder names #
     setcolorder(dc_comics, c('comic_title', 'comic_issue', 'comic_price'))
+    
+    # transfer to output table and delete #
+    new_comics <- rbind(new_comics, dc_comics)
+    rm(dc_comics)
   }
   
   
@@ -101,4 +109,9 @@ new_comic_scraper <- function(publisher = c(NA_character_), content_type = c('Co
   if(publisher == 'Image'){
     
   }
+  
+  
+  ##### 5. Clean Data and Output #####
+
+  
 }
